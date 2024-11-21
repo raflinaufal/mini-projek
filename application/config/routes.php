@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -58,6 +58,7 @@ $route['default_controller'] = 'auth';
 $route['auth/login'] = 'auth/login';
 $route['auth/logout'] = 'auth/logout';
 $route['user/dashboard'] = 'user/dashboard';
+$route['user/user-list'] = 'user/user_list';
 $route['user/form/(:num)'] = 'user/form/$1';
 $route['user/form'] = 'user/form';
 $route['user/save/(:num)'] = 'user/save/$1';
