@@ -64,3 +64,20 @@ $route['user/form'] = 'user/form';
 $route['user/save/(:num)'] = 'user/save/$1';
 $route['user/save'] = 'user/save';
 $route['user/delete/(:num)'] = 'user/delete/$1';
+$route['api/users/(:any)'] = 'api/users/$1';  // Menangani route untuk pengguna
+
+
+// get all
+$route['api/user/tampil'] = 'apiuser';  // Menangani route untuk pengguna
+
+
+// get by id 
+$route['api/user/tampil/(:any)'] = 'apiuser/get_user/$1';  // Menangani route untuk pengguna
+
+
+// create user 
+$route['api/user/create'] = 'apiuser/create';  // Menangani route untuk pengguna
+
+// update users
+$route['api/user/update/(:num)'] = 'apiuser/update/$1';
+$route['api/user/delete/(:num)'] = 'apiuser/delete/$1';

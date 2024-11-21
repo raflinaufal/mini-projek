@@ -9,7 +9,7 @@ class Auth extends CI_Controller
 		parent::__construct();
 
 		$this->load->library('form_validation');
-		$this->load->model('User_model');
+		$this->load->model('Users_model');
 	}
 
 	// Halaman Login
@@ -33,7 +33,7 @@ class Auth extends CI_Controller
 			$email = $this->input->post('email');
 			$password = md5($this->input->post('password'));  // Menggunakan MD5 untuk password
 			// Validasi pengguna berdasarkan email
-			$user = $this->User_model->get_user_by_email($email);
+			$user = $this->User_models->get_user_by_email($email);
 			// var_dump($user);exit;
 
 			if ($user && $user['password'] === $password) {  // Bandingkan password MD5
