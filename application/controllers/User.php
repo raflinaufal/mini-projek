@@ -230,32 +230,39 @@ class User extends CI_Controller
 
 	public function update_action()
 	{
-		// if (!is_admin()) {
-		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
-		// 	redirect(site_url('user/dashboard'));
-		// }
+		// Tambahkan aturan validasi untuk email dan password
 		$this->form_validation->set_rules('name', 'Name', 'trim|required');
-		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email', [
+			'valid_email' => 'Email harus mengandung "@" dan formatnya valid.',
+		]);
+		$this->form_validation->set_rules('password', 'Password', 'trim|min_length[9]', [
+			'min_length' => 'Password harus memiliki setidaknya 9 karakter.',
+		]);
 		$this->form_validation->set_rules('role', 'Role', 'trim|required');
 
+		// Jika validasi gagal
 		if ($this->form_validation->run() == FALSE) {
-			$this->edit($this->input->post('id', TRUE));
+			$this->update($this->input->post('id', TRUE));
 		} else {
+			// Ambil data dari input
 			$data = array(
 				'name' => $this->input->post('name', TRUE),
 				'email' => $this->input->post('email', TRUE),
 				'role' => $this->input->post('role', TRUE),
 			);
 
+			// Jika password diisi, tambahkan ke data
 			if (!empty($this->input->post('password', TRUE))) {
 				$data['password'] = md5($this->input->post('password', TRUE));
 			}
 
+			// Update data pengguna
 			$this->Users_model->update($this->input->post('id', TRUE), $data);
 			$this->session->set_flashdata('message', 'Update Record Success');
 			redirect(site_url('user/user-list'));
 		}
 	}
+
 
 	public function delete_user($id)
 	{
