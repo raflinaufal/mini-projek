@@ -117,82 +117,102 @@ class User extends CI_Controller
 		}
 	}
 
+
+
 	public function create()
 	{
+		$name = $this->session->userdata('name');
 		$data = array(
-			'button' => 'Create',
-			'action' => site_url('users/create_action'),
-			'id' => set_value('id'),
-			'name' => set_value('name'),
-			'email' => set_value('email'),
-			'password' => set_value('password'),
-			'role' => set_value('role'),
-			'created_at' => set_value('created_at'),
+			'nama_user' => $name,
+			'content_page' =>  "layout/content/users_form"
 		);
-		$this->load->view('users_form', $data);
+		$this->load->view("layout/template/index", $data);
 	}
+
+
 
 	public function create_action()
 	{
-		$this->_rules();
+		// Aturan validasi
+		$this->form_validation->set_rules('name', 'Name', 'trim|required');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[8]');
+		$this->form_validation->set_rules('role', 'Role', 'trim|required');
+		// $this->form_validation->set_rules('created_at', 'Created At', 'trim|required');
 
+		// Jika validasi gagal
 		if ($this->form_validation->run() == FALSE) {
-			$this->create();
+			$this->create(); // Kembali ke form create
 		} else {
+			// Ambil data dari form
 			$data = array(
 				'name' => $this->input->post('name', TRUE),
 				'email' => $this->input->post('email', TRUE),
-				'password' => $this->input->post('password', TRUE),
+				'password' => md5($this->input->post('password', TRUE)), // Enkripsi password
 				'role' => $this->input->post('role', TRUE),
-				'created_at' => $this->input->post('created_at', TRUE),
+				'created_at' => date('Y-m-d H:i:s'), // Waktu sekarang
 			);
 
+			// Simpan data ke database melalui model
 			$this->Users_model->insert($data);
+
+			// Set flashdata untuk notifikasi
 			$this->session->set_flashdata('message', 'Create Record Success');
-			redirect(site_url('users'));
+
+			// Redirect ke halaman daftar pengguna
+			redirect(site_url('user/user-list'));
 		}
 	}
 
+
+
+
 	public function update($id)
 	{
-		$row = $this->Users_model->get_by_id($id);
+		$row = $this->Users_model->get_by_id($id); // Ambil data berdasarkan ID
 
 		if ($row) {
+			$name = $this->session->userdata('name'); // Ambil nama pengguna dari session
 			$data = array(
 				'button' => 'Update',
-				'action' => site_url('users/update_action'),
-				'id' => set_value('id', $row->id),
+				'action' => site_url('user/update_action'), // Action untuk update
+				'id' => $row->id,
 				'name' => set_value('name', $row->name),
 				'email' => set_value('email', $row->email),
-				'password' => set_value('password', $row->password),
+				'password' => '', // Kosongkan, hanya update jika diisi
 				'role' => set_value('role', $row->role),
-				'created_at' => set_value('created_at', $row->created_at),
+				'nama_user' => $name,
+				'content_page' => 'layout/content/users_form_update', // Form update
 			);
-			$this->load->view('users_form', $data);
+			$this->load->view('layout/template/index', $data);
 		} else {
 			$this->session->set_flashdata('message', 'Record Not Found');
-			redirect(site_url('users'));
+			redirect(site_url('user/user-list'));
 		}
 	}
 
 	public function update_action()
 	{
-		$this->_rules();
+		$this->form_validation->set_rules('name', 'Name', 'trim|required');
+		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+		$this->form_validation->set_rules('role', 'Role', 'trim|required');
 
 		if ($this->form_validation->run() == FALSE) {
-			$this->update($this->input->post('id', TRUE));
+			$this->edit($this->input->post('id', TRUE));
 		} else {
 			$data = array(
 				'name' => $this->input->post('name', TRUE),
 				'email' => $this->input->post('email', TRUE),
-				'password' => $this->input->post('password', TRUE),
 				'role' => $this->input->post('role', TRUE),
-				'created_at' => $this->input->post('created_at', TRUE),
 			);
+
+			if (!empty($this->input->post('password', TRUE))) {
+				$data['password'] = md5($this->input->post('password', TRUE));
+			}
 
 			$this->Users_model->update($this->input->post('id', TRUE), $data);
 			$this->session->set_flashdata('message', 'Update Record Success');
-			redirect(site_url('users'));
+			redirect(site_url('user/user-list'));
 		}
 	}
 
@@ -203,10 +223,10 @@ class User extends CI_Controller
 		if ($row) {
 			$this->Users_model->delete($id);
 			$this->session->set_flashdata('message', 'Delete Record Success');
-			redirect(site_url('users'));
+			redirect(site_url('user/user-list'));
 		} else {
 			$this->session->set_flashdata('message', 'Record Not Found');
-			redirect(site_url('users'));
+			redirect(site_url('user/user-list'));
 		}
 	}
 

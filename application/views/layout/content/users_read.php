@@ -22,5 +22,5 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td><a href="<?php echo site_url('users') ?>" class="btn btn-default">Cancel</a></td>
+		<td><a href="<?php echo site_url('user/user-list') ?>" class="btn btn-primary">Cancel</a></td>
 	</tr>

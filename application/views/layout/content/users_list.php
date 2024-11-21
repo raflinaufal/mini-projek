@@ -18,7 +18,7 @@
 			</div>
 		</div>
 		<div class="col-md-4 text-right">
-			<?php echo anchor(site_url('users/create'), 'Create', 'class="btn btn-primary"'); ?>
+			<?php echo anchor(site_url('user/create'), 'Create', 'class="btn btn-primary"'); ?>
 		</div>
 	</div>
 	<table class="table table-bordered table-striped" id="mytable">
@@ -47,11 +47,11 @@
 					<td><?php echo $users->created_at ?></td>
 					<td style="text-align:center" width="200px">
 						<?php
-						echo anchor(site_url('users/read/' . $users->id), 'Read');
+						echo anchor(site_url('user/read/' . $users->id), 'Read');
 						echo ' | ';
-						echo anchor(site_url('users/update/' . $users->id), 'Update');
+						echo anchor(site_url('user/update/' . $users->id), 'Update');
 						echo ' | ';
-						echo anchor(site_url('users/delete/' . $users->id), 'Delete', 'onclick="javasciprt: return confirm(\'Are You Sure ?\')"');
+						echo anchor(site_url('user/delete_user/' . $users->id), 'Delete', 'onclick="javasciprt: return confirm(\'Are You Sure ?\')"');
 						?>
 					</td>
 				</tr>
