@@ -65,8 +65,32 @@ $route['user/save/(:num)'] = 'user/save/$1';
 $route['user/save'] = 'user/save';
 $route['user/delete/(:num)'] = 'user/delete/$1';
 
+
 // Default route untuk menampilkan produk
 $route['products'] = 'products/index'; // Menampilkan daftar produk
 $route['products/create'] = 'products/create'; // Halaman untuk tambah produk
 $route['products/edit/(:num)'] = 'products/edit/$1'; // Halaman untuk edit produk berdasarkan ID
 $route['products/delete/(:num)'] = 'products/delete/$1'; // Endpoint untuk hapus produk berdasarkan ID
+
+$route['api/users/(:any)'] = 'api/users/$1';  // Menangani route untuk pengguna
+
+
+// get all
+$route['api/user/tampil'] = 'apiuser';  // Menangani route untuk pengguna
+
+
+// get by id 
+$route['api/user/tampil/(:any)'] = 'apiuser/get_user/$1';  // Menangani route untuk pengguna
+
+
+// create user 
+$route['api/user/create'] = 'apiuser/create';  // Menangani route untuk pengguna
+
+// update users
+$route['api/user/update/(:num)'] = 'apiuser/update/$1';
+$route['api/user/delete/(:num)'] = 'apiuser/delete/$1';
+
+$route['dashboard'] = 'dashboard/index'; // Menampilkan dashboard utama
+$route['dashboard/export_excel'] = 'dashboard/export_excel'; // Ekspor data ke Excel
+$route['dashboard/export_pdf'] = 'dashboard/export_pdf'; // Ekspor data ke PDF
+
