@@ -64,3 +64,9 @@ $route['user/form'] = 'user/form';
 $route['user/save/(:num)'] = 'user/save/$1';
 $route['user/save'] = 'user/save';
 $route['user/delete/(:num)'] = 'user/delete/$1';
+
+// Default route untuk menampilkan produk
+$route['products'] = 'products/index'; // Menampilkan daftar produk
+$route['products/create'] = 'products/create'; // Halaman untuk tambah produk
+$route['products/edit/(:num)'] = 'products/edit/$1'; // Halaman untuk edit produk berdasarkan ID
+$route['products/delete/(:num)'] = 'products/delete/$1'; // Endpoint untuk hapus produk berdasarkan ID
