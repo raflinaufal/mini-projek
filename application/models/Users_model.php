@@ -126,14 +126,7 @@ class Users_model extends CI_Model
 	}
 
 
-	public function delete_data($id)
-	{
-		$this->db->where('id', $id);
-		$this->db->delete('users');
 
-		// Mengembalikan true jika ada data yang dihapus
-		return $this->db->affected_rows() > 0;
-	}
 
 	// Fungsi untuk mengecek apakah ID pengguna ada
 	public function get_user_by_id($id)

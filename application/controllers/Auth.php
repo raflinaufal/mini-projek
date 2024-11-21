@@ -25,25 +25,34 @@ class Auth extends CI_Controller
 		$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 		$this->form_validation->set_rules('password', 'Password', 'required|min_length[8]');
 
-		// Jika validasi gagal, tampilkan halaman login
 		if ($this->form_validation->run() == FALSE) {
+			// Jika validasi gagal, tampilkan kembali halaman login
 			$this->load->view('layout/login');
 		} else {
-			// Ambil email dan password yang dimasukkan
+			// Ambil data input
 			$email = $this->input->post('email');
-			$password = md5($this->input->post('password'));  // Menggunakan MD5 untuk password
-			// Validasi pengguna berdasarkan email
-			$user = $this->User_models->get_user_by_email($email);
-			// var_dump($user);exit;
+			$password = md5($this->input->post('password'));  // Gunakan MD5 untuk password
 
-			if ($user && $user['password'] === $password) {  // Bandingkan password MD5
-				// Jika valid, set session data
-				$this->session->set_userdata('user_id', $user['id']);
-				$this->session->set_userdata('name', $user['name']);
-				$this->session->set_userdata('role', $user['role']);
-				redirect('user/dashboard');
+			// Ambil pengguna dari database
+			$user = $this->Users_model->get_user_by_email($email);
+
+			if ($user && $user['password'] === $password) {
+				// Jika email dan password cocok, set session
+				$this->session->set_userdata([
+					'user_id' => $user['id'],
+					'name' => $user['name'],
+					'role' => $user['role'],
+					'logged_in' => TRUE,
+				]);
+
+				// Redirect berdasarkan role
+				if ($user['role'] === 'Admin') {
+					redirect('user/user-list'); // Admin ke halaman daftar pengguna
+				} else {
+					redirect('user/user-list'); // Non-admin ke dashboard
+				}
 			} else {
-				// Jika login gagal, tampilkan pesan error
+				// Jika login gagal
 				$this->session->set_flashdata('error', 'Email atau password salah.');
 				redirect('auth');
 			}

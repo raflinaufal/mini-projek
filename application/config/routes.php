@@ -81,3 +81,7 @@ $route['api/user/create'] = 'apiuser/create';  // Menangani route untuk pengguna
 // update users
 $route['api/user/update/(:num)'] = 'apiuser/update/$1';
 $route['api/user/delete/(:num)'] = 'apiuser/delete/$1';
+
+$route['dashboard'] = 'dashboard/index'; // Menampilkan dashboard utama
+$route['dashboard/export_excel'] = 'dashboard/export_excel'; // Ekspor data ke Excel
+$route['dashboard/export_pdf'] = 'dashboard/export_pdf'; // Ekspor data ke PDF

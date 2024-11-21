@@ -9,8 +9,17 @@ class User extends CI_Controller
 		parent::__construct();
 		// $this->load->model('User_model');
 		$this->load->model('Users_model');
+		$this->load->model('Sales_model');
+		$this->load->helper('url');
+		// $this->load->library('excel'); // Untuk ekspor Excel
+		$this->load->library('pdf');  // Untuk ekspor PDF
 		if (!$this->session->userdata('user_id')) {
 			redirect('auth');
+		}
+
+		// Cek apakah pengguna sudah login, kecuali untuk fungsi login dan index
+		if (!in_array($this->router->fetch_method(), ['index', 'login']) && !$this->session->userdata('user_id')) {
+			redirect('auth'); // Redirect ke halaman login jika belum login
 		}
 	}
 
@@ -20,6 +29,12 @@ class User extends CI_Controller
 		$name = $this->session->userdata('name');
 		//var_dump($name);
 		$data['users'] = $this->Users_model->get_all_users();
+		$start_date = $this->input->get('start_date');
+		$end_date = $this->input->get('end_date');
+		$data['sales'] = $this->Sales_model->get_sales($start_date, $end_date);
+		$data['start_date'] = $start_date;
+		$data['end_date'] = $end_date;
+
 		$data['nama_user'] = $name;
 		$data['content_page'] = "layout/content/dashboard";
 		$this->load->view("layout/template/index", $data);
@@ -77,6 +92,11 @@ class User extends CI_Controller
 
 	public function user_list()
 	{
+
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$users = $this->Users_model->get_all();
 		// $data[] = $name;
 		$name = $this->session->userdata('name');
@@ -94,6 +114,11 @@ class User extends CI_Controller
 
 	public function read($id)
 	{
+
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$row = $this->Users_model->get_by_id($id);
 		$name = $this->session->userdata('name');
 
@@ -121,6 +146,10 @@ class User extends CI_Controller
 
 	public function create()
 	{
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$name = $this->session->userdata('name');
 		$data = array(
 			'nama_user' => $name,
@@ -133,6 +162,10 @@ class User extends CI_Controller
 
 	public function create_action()
 	{
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		// Aturan validasi
 		$this->form_validation->set_rules('name', 'Name', 'trim|required');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
@@ -169,6 +202,10 @@ class User extends CI_Controller
 
 	public function update($id)
 	{
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$row = $this->Users_model->get_by_id($id); // Ambil data berdasarkan ID
 
 		if ($row) {
@@ -193,6 +230,10 @@ class User extends CI_Controller
 
 	public function update_action()
 	{
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$this->form_validation->set_rules('name', 'Name', 'trim|required');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
 		$this->form_validation->set_rules('role', 'Role', 'trim|required');
@@ -218,6 +259,10 @@ class User extends CI_Controller
 
 	public function delete_user($id)
 	{
+		// if (!is_admin()) {
+		// 	$this->session->set_flashdata('message', 'Access Denied: Admins only.');
+		// 	redirect(site_url('user/dashboard'));
+		// }
 		$row = $this->Users_model->get_by_id($id);
 
 		if ($row) {
