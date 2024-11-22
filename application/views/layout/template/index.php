@@ -30,7 +30,7 @@
 
 
 		<!-- Sidebar -->
-		<?php $this->load->view('layout/page/sidebar')  ?>
+		<?php $this->load->view('layout/partials/sidebar')  ?>
 
 		<!-- End of Sidebar -->
 
@@ -43,7 +43,7 @@
 				<!-- Topbar -->
 				<div class="container-fluid">
 
-					<?php $this->load->view('layout/page/navbar')  ?>
+					<?php $this->load->view('layout/partials/navbar')  ?>
 					<!-- End of Topbar -->
 
 					<!-- Begin Page Content -->

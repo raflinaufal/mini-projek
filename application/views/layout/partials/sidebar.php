@@ -42,7 +42,7 @@
 	<!-- Nav Item - Users -->
 	<?php if ($role == 'Admin'):  ?>
 		<li class="nav-item">
-			<a class="nav-link" href="<?= base_url('user/user-list') ?>">
+			<a class="nav-link" href="<?= base_url('products') ?>">
 				<i class="fas fa-fw fa-users"></i>
 				<span>Produk</span>
 				<span>Role : <?php echo $role;  ?></span>

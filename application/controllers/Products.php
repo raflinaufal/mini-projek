@@ -6,121 +6,109 @@ class Products extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Product_model');
-        $this->load->library('pagination');
+        $this->load->library(['pagination', 'upload']); // Load library upload
     }
 
-    // Menampilkan daftar produk dengan pagination
-public function index() {
-     // Ambil nama pengguna dari sesi
-    $nama_user = $this->session->userdata('nama_user');     
-    // Kirim data ke view
-    $data['nama_user'] = $nama_user;
-    // Konfigurasi pagination
-    $config = [
-        'base_url' => site_url('products/index'), // URL untuk pagination
-        'total_rows' => $this->Product_model->count_products($this->input->get('search')), // Total data produk
-        'per_page' => 5, // Jumlah data per halaman
-        'uri_segment' => 3, // Segment ke-3 akan menampilkan nomor halaman
-        'attributes' => ['class' => 'page-link'] // Styling untuk pagination
-    ];
+    public function index() {
+        $nama_user = $this->session->userdata('nama_user');
+        $data['nama_user'] = $nama_user;
 
-    // Inisialisasi pagination
-    $this->pagination->initialize($config);
+        $search = $this->input->get('search');
+        $page = $this->uri->segment(3) ? $this->uri->segment(3) : 0;
 
-    // Ambil data produk berdasarkan parameter pagination dan pencarian
-    $data['products'] = $this->Product_model->get_products(
-        $config['per_page'],  // Jumlah produk per halaman
-        $this->uri->segment(3),  // Segment halaman
-        $this->input->get('search'),  // Parameter pencarian
-        $this->input->get('sort')  // Parameter pengurutan
-    );
+        // Pagination Configuration
+        $config['base_url'] = base_url('products/index');
+        $config['total_rows'] = $this->Product_model->count_products($search);
+        $config['per_page'] = 10;
+        $this->pagination->initialize($config);
 
-    // Ambil link pagination
-    $data['pagination'] = $this->pagination->create_links();
+        // Get products
+        $data['products'] = $this->Product_model->get_products($config['per_page'], $page, $search);
+        $data['pagination'] = $this->pagination->create_links();
 
-    // Tentukan halaman konten untuk dimuat
-    $data['content_page'] = 'layout/content/products/index'; // Path ke view products/index
+        $data['content_page'] = 'layout/products/index'; // Path ke view
+        $this->load->view('layout/template/index', $data); // Gunakan layout utama
+    }
 
-    // Muat view dengan layout utama
-    $this->load->view('layout/template/index', $data); // Gunakan layout utama dengan data yang diteruskan
-}
+    public function add() {
+        $nama_user = $this->session->userdata('nama_user');
+        $data['nama_user'] = $nama_user;
 
-
-    // Menampilkan halaman form untuk membuat produk baru
-    public function create() {
         if ($this->input->post()) {
-            // Konfigurasi upload gambar
-            $config['upload_path'] = './uploads/';
-            $config['allowed_types'] = 'jpg|png|jpeg';
-            $this->load->library('upload', $config);
+            // Handle image upload
+            $upload_data = $this->do_upload();
+            if (isset($upload_data['error'])) {
+                $data['error'] = $upload_data['error']; // Tampilkan pesan error ke view
+            } else {
+                $product_data = [
+                    'name' => $this->input->post('name'),
+                    'price' => $this->input->post('price'),
+                    'description' => $this->input->post('description'),
+                    'image' => $upload_data['file_name']
+                ];
 
-            $image = null;
-            // Jika upload gambar berhasil
-            if ($this->upload->do_upload('image')) {
-                $image = $this->upload->data('file_name');
+                $this->Product_model->insert_product($product_data);
+                redirect('products');
             }
-
-            // Data produk yang akan disimpan
-            $data = [
-                'name' => $this->input->post('name'),
-                'price' => $this->input->post('price'),
-                'description' => $this->input->post('description'),
-                'image' => $image
-            ];
-
-            // Simpan produk ke database
-            $this->Product_model->create_product($data);
-            redirect('products');
         }
 
-        // Tentukan halaman konten untuk form create
-        $data['content_page'] = 'products/create'; // Path ke view
-        // Muat view dengan layout utama
-        $this->load->view('layout/template', $data); // Gunakan layout utama
+        $data['content_page'] = 'layout/products/create'; // Path ke view
+        $this->load->view('layout/template/index', $data); // Gunakan layout utama
     }
 
-    // Menampilkan halaman form untuk mengedit produk
     public function edit($id) {
-        $nama_user = $this->session->userdata('nama_user');     
-        // Kirim data ke view
+        $nama_user = $this->session->userdata('nama_user');
         $data['nama_user'] = $nama_user;
-        // Ambil data produk berdasarkan ID
-        $data['product'] = $this->Product_model->get_product_by_id($id);
+        $product = $this->Product_model->get_product($id);
 
-        // Jika ada data yang di-submit
         if ($this->input->post()) {
-            $data = [
+            $product_data = [
                 'name' => $this->input->post('name'),
                 'price' => $this->input->post('price'),
                 'description' => $this->input->post('description')
             ];
 
-            // Jika ada gambar baru yang diupload
-            if (!empty($_FILES['image']['name'])) {
-                $config['upload_path'] = './uploads/';
-                $config['allowed_types'] = 'jpg|png|jpeg';
-                $this->load->library('upload', $config);
-
-                if ($this->upload->do_upload('image')) {
-                    $data['image'] = $this->upload->data('file_name');
+            // Handle image upload if there is a new image
+            if ($_FILES['image']['name']) {
+                $upload_data = $this->do_upload();
+                if (isset($upload_data['error'])) {
+                    $data['error'] = $upload_data['error']; // Tampilkan pesan error ke view
+                } else {
+                    $product_data['image'] = $upload_data['file_name'];
                 }
             }
 
-            // Update produk di database
-            $this->Product_model->update_product($id, $data);
+            $this->Product_model->update_product($id, $product_data);
             redirect('products');
         }
 
-        // Tentukan halaman konten untuk form edit
-        $data['content_page'] = 'layout/content/products/edit'; // Path ke view
-        // Muat view dengan layout utama
+        $data['product'] = $product;
+        $data['content_page'] = 'layout/products/edit'; // Path ke view
         $this->load->view('layout/template/index', $data); // Gunakan layout utama
     }
 
-    // Menghapus produk
     public function delete($id) {
-        // Hapus produk dari database
         $this->Product_model->delete_product($id);
         redirect('products');
+    }
+
+    // Fungsi untuk menangani upload file
+    private function do_upload() {
+        $config['upload_path']   = './uploads/'; // Path folder upload
+        $config['allowed_types'] = 'jpg|jpeg|png|gif'; // Tipe file yang diizinkan
+        $config['max_size']      = 2048; // Ukuran maksimum (2MB)
+        $config['encrypt_name']  = TRUE; // Enkripsi nama file agar unik
+
+        if (!is_dir($config['upload_path'])) {
+            mkdir($config['upload_path'], 0755, true); // Buat folder jika belum ada
+        }
+
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload('image')) {
+            return ['error' => $this->upload->display_errors('<p>', '</p>')];
+        } else {
+            return $this->upload->data(); // Return data file jika berhasil upload
+        }
     }
 }

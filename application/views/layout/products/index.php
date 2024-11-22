@@ -1,7 +1,10 @@
 <div class="">
     <h1 class="h3 mb-4 text-gray-800">Daftar Produk</h1>
 
-    <div class=" mb-4">
+    <!-- Tombol Create Produk -->
+    <a href="<?= site_url('products/add') ?>" class="btn btn-primary mb-3">Tambah Produk</a>
+
+    <div class="mb-4">
         <div class="card-body">
             <div class="table-responsive">
                 <table id="productTable" class="table table-bordered table-striped" width="100%" cellspacing="0">

@@ -235,8 +235,8 @@ class User extends CI_Controller
 		$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email', [
 			'valid_email' => 'Email harus mengandung "@" dan formatnya valid.',
 		]);
-		$this->form_validation->set_rules('password', 'Password', 'trim|min_length[9]', [
-			'min_length' => 'Password harus memiliki setidaknya 9 karakter.',
+		$this->form_validation->set_rules('password', 'Password', 'trim|min_length[8]', [
+			'min_length' => 'Password harus memiliki setidaknya 8 karakter.',
 		]);
 		$this->form_validation->set_rules('role', 'Role', 'trim|required');
 
