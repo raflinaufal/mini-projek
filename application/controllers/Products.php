@@ -9,11 +9,16 @@ class Products extends CI_Controller {
         $this->load->library(['pagination', 'upload', 'form_validation']);
     }
 
+
     public function index() {
         $nama_user = $this->session->userdata('nama_user');
         $data['nama_user'] = $nama_user;
 
-        $search = $this->input->get('search'); // Ambil keyword pencarian dari query parameter
+        // Ambil parameter sorting dan pencarian dari URL
+        $search = $this->input->get('search');
+        $order_by = $this->input->get('order_by', TRUE) ?: 'name'; // Default order by 'name'
+        $sort = $this->input->get('sort', TRUE) ?: 'asc'; // Default sort ascending
+
         $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
 
         // Konfigurasi pagination
@@ -46,11 +51,15 @@ class Products extends CI_Controller {
 
         $this->pagination->initialize($config);
 
-        // Get products
-        $data['products'] = $this->Product_model->get_products($config['per_page'], $page, $search);
+        // Ambil data produk dari model dengan parameter sorting
+        $data['products'] = $this->Product_model->get_products($config['per_page'], $page, $search, $order_by, $sort);
         $data['pagination'] = $this->pagination->create_links();
 
-        $data['content_page'] = 'layout/products/index'; // Path ke view
+        // Pass order_by dan sort ke view untuk sorting UI
+        $data['order_by'] = $order_by;
+        $data['sort'] = $sort;
+
+        $data['content_page'] = 'layout/products/index';
         $this->load->view('layout/template/index', $data); // Gunakan layout utama
     }
 

@@ -47,9 +47,9 @@ class Auth extends CI_Controller
 
 				// Redirect berdasarkan role
 				if ($user['role'] === 'Admin') {
-					redirect('user/user-list'); // Admin ke halaman daftar pengguna
+					redirect('user/dashboard'); // Admin ke halaman daftar pengguna
 				} else {
-					redirect('user/user-list'); // Non-admin ke dashboard
+					redirect('user/home'); // Non-admin ke dashboard
 				}
 			} else {
 				// Jika login gagal

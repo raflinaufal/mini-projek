@@ -1,17 +1,16 @@
 <div class="container-fluid">
-    <?php if ($this->session->flashdata('success')): ?>
-    <div class="alert alert-success">
-        <?= $this->session->flashdata('success') ?>
-    </div>
-<?php endif; ?>
-
-<?php if (isset($error)): ?>
-    <div class="alert alert-danger">
-        <?= $error ?>
-    </div>
-<?php endif; ?>
     <h1 class="h3 mb-4 text-gray-800">Tambah Produk Baru</h1>
+ <?php if ($this->session->flashdata('success')): ?>
+            <div class="alert alert-success">
+                <?= $this->session->flashdata('success') ?>
+            </div>
+            <?php endif; ?>
 
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger">
+                    <?= $error ?>
+                </div>
+            <?php endif; ?>
     <form method="post" enctype="multipart/form-data" action="<?= base_url('products/add'); ?>">
         <div class="card shadow mb-4">
             <div class="card-header py-3">

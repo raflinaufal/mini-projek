@@ -32,8 +32,7 @@ class apiUser extends CI_Controller
 	}
 
 
-	// POST: Menambahkan pengguna baru
-	// POST: Menambahkan pengguna baru
+	
 	// POST: Menambahkan pengguna baru
 	public function create()
 	{
