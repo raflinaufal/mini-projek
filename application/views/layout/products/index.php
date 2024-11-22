@@ -26,7 +26,7 @@
                                 <a href="?order_by=name&sort=<?= $sort === 'asc' ? 'desc' : 'asc' ?>" class="text-decoration-none text-dark">
                                     Nama Produk
                                     <?php if ($order_by === 'name'): ?>
-                                        <i class="fa <?= $sort === 'asc' ? 'fa-sort-up' : 'fa-sort-down' ?>"></i>
+                                        <i class="fa <?= $sort === 'asc' ? '' : 'fa-sort-down' ?>"></i>
                                     <?php endif; ?>
                                 </a>
                             </th>
@@ -35,7 +35,7 @@
                                 <a href="?order_by=price&sort=<?= $sort === 'asc' ? 'desc' : 'asc' ?>" class="text-decoration-none text-dark">
                                     Harga
                                     <?php if ($order_by === 'price'): ?>
-                                        <i class="fa <?= $sort === 'asc' ? 'fa-sort-up' : 'fa-sort-down' ?>"></i>
+                                        <i class="fa <?= $sort === 'asc' ? 'fa-sort-down ' : 'fa-sort-up' ?>"></i>
                                     <?php endif; ?>
                                 </a>
                             </th>
