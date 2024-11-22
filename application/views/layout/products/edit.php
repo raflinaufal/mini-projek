@@ -2,6 +2,17 @@
     <div class="card">
       <h1 class="h3 mb-4 text-gray-800">Edit Produk</h1>
         <div class="card-body">
+        <?php if ($this->session->flashdata('success')): ?>
+            <div class="alert alert-success">
+                <?= $this->session->flashdata('success') ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger">
+                    <?= $error ?>
+                </div>
+            <?php endif; ?>
             <form method="post" enctype="multipart/form-data">
                 <!-- Nama Produk -->
                 <div class="form-group mb-3">

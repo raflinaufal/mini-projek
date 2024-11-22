@@ -3,15 +3,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Product_model extends CI_Model {
 
-    public function get_products($limit, $offset, $search = '', $order_by = 'price', $sort = 'asc') {
-        $this->db->like('name', $search);
+ public function get_products($limit, $offset, $search = '', $order_by = 'name', $sort = 'asc') {
+        if (!empty($search)) {
+            $this->db->like('name', $search);
+        }
         $this->db->order_by($order_by, $sort);
         $query = $this->db->get('products', $limit, $offset);
         return $query->result();
     }
 
     public function count_products($search = '') {
-        $this->db->like('name', $search);
+        if (!empty($search)) {
+            $this->db->like('name', $search);
+        }
         return $this->db->count_all_results('products');
     }
 

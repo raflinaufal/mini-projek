@@ -1,13 +1,12 @@
 <div class="">
     <h1 class="h3 mb-4 text-gray-800">Daftar Produk</h1>
-
     <!-- Tombol Create Produk -->
     <a href="<?= site_url('products/add') ?>" class="btn btn-primary mb-3">Tambah Produk</a>
-
-    <div class="mb-4">
+    <!-- Tabel Produk -->
+    <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table id="productTable" class="table table-bordered table-striped" width="100%" cellspacing="0">
+                <table id="productTable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -19,40 +18,44 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($products as $product): ?>
+                        <?php if (!empty($products)): ?>
+                            <?php foreach ($products as $product): ?>
+                                <tr>
+                                    <td><?= $product->id ?></td>
+                                    <td><?= $product->name ?></td>
+                                    <td><?= $product->description ?></td>
+                                    <td><?= 'Rp ' . number_format($product->price, 0, ',', '.') ?></td>
+                                    <td><img src="<?= base_url('uploads/' . $product->image) ?>" alt="Product Image" width="50"></td>
+                                    <td>
+                                        <a href="<?= site_url('products/edit/' . $product->id) ?>" class="btn btn-warning btn-sm">Edit</a>
+                                        <a href="<?= site_url('products/delete/' . $product->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><?= $product->id ?></td>
-                                <td><?= $product->name ?></td>
-                                <td><?= $product->description ?></td>
-                                <td><?= 'Rp ' . number_format($product->price, 0, ',', '.') ?></td>
-                                <td><img src="<?= base_url('uploads/' . $product->image) ?>" alt="Product Image" width="50"></td>
-                                <td>
-                                    <a href="<?= site_url('products/edit/' . $product->id) ?>" class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="<?= site_url('products/delete/' . $product->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">Delete</a>
-                                </td>
+                                <td colspan="6" class="text-center">Tidak ada produk ditemukan</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Pagination (optional) -->
-    <div class="pagination">
+    <!-- Pagination -->
+    <div class="mt-3">
         <?= $pagination ?>
     </div>
 </div>
-
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
         $('#productTable').DataTable({
-            "paging": true,  // Aktifkan pagination
-            "searching": true,  // Aktifkan pencarian
-            "ordering": true,  // Aktifkan pengurutan
-            "info": true,  // Tampilkan informasi jumlah data
-            "lengthMenu": [5, 10, 25, 50] // Pilihan jumlah per halaman
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthMenu": [5, 10, 25, 50]
         });
     });
 </script>

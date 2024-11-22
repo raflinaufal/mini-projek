@@ -6,20 +6,44 @@ class Products extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Product_model');
-        $this->load->library(['pagination', 'upload']); // Load library upload
+        $this->load->library(['pagination', 'upload', 'form_validation']);
     }
 
     public function index() {
         $nama_user = $this->session->userdata('nama_user');
         $data['nama_user'] = $nama_user;
 
-        $search = $this->input->get('search');
-        $page = $this->uri->segment(3) ? $this->uri->segment(3) : 0;
+        $search = $this->input->get('search'); // Ambil keyword pencarian dari query parameter
+        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
 
-        // Pagination Configuration
+        // Konfigurasi pagination
         $config['base_url'] = base_url('products/index');
         $config['total_rows'] = $this->Product_model->count_products($search);
         $config['per_page'] = 10;
+        $config['uri_segment'] = 3;
+        $config['reuse_query_string'] = TRUE;
+
+        // Customisasi tampilan pagination
+        $config['full_tag_open'] = '<nav><ul class="pagination">';
+        $config['full_tag_close'] = '</ul></nav>';
+        $config['attributes'] = ['class' => 'page-link'];
+        $config['first_link'] = 'First';
+        $config['last_link'] = 'Last';
+        $config['first_tag_open'] = '<li class="page-item">';
+        $config['first_tag_close'] = '</li>';
+        $config['prev_link'] = '&laquo';
+        $config['prev_tag_open'] = '<li class="page-item">';
+        $config['prev_tag_close'] = '</li>';
+        $config['next_link'] = '&raquo';
+        $config['next_tag_open'] = '<li class="page-item">';
+        $config['next_tag_close'] = '</li>';
+        $config['last_tag_open'] = '<li class="page-item">';
+        $config['last_tag_close'] = '</li>';
+        $config['cur_tag_open'] = '<li class="page-item active"><span class="page-link">';
+        $config['cur_tag_close'] = '</span></li>';
+        $config['num_tag_open'] = '<li class="page-item">';
+        $config['num_tag_close'] = '</li>';
+
         $this->pagination->initialize($config);
 
         // Get products
@@ -30,25 +54,36 @@ class Products extends CI_Controller {
         $this->load->view('layout/template/index', $data); // Gunakan layout utama
     }
 
-    public function add() {
+      public function add() {
         $nama_user = $this->session->userdata('nama_user');
         $data['nama_user'] = $nama_user;
 
         if ($this->input->post()) {
-            // Handle image upload
-            $upload_data = $this->do_upload();
-            if (isset($upload_data['error'])) {
-                $data['error'] = $upload_data['error']; // Tampilkan pesan error ke view
-            } else {
-                $product_data = [
-                    'name' => $this->input->post('name'),
-                    'price' => $this->input->post('price'),
-                    'description' => $this->input->post('description'),
-                    'image' => $upload_data['file_name']
-                ];
+            // Validasi input form
+            $this->form_validation->set_rules('name', 'Product Name', 'required|min_length[3]|max_length[50]');
+            $this->form_validation->set_rules('price', 'Price', 'required|numeric');
+            $this->form_validation->set_rules('description', 'Description', 'required|max_length[255]');
 
-                $this->Product_model->insert_product($product_data);
-                redirect('products');
+            if ($this->form_validation->run() == FALSE) {
+                $data['error'] = validation_errors(); // Simpan pesan error validasi
+            } else {
+                // Handle image upload
+                $upload_data = $this->do_upload();
+                if (isset($upload_data['error'])) {
+                    $data['error'] = $upload_data['error']; // Simpan pesan error upload
+                } else {
+                    // Simpan data ke database jika validasi dan upload berhasil
+                    $product_data = [
+                        'name' => $this->input->post('name'),
+                        'price' => $this->input->post('price'),
+                        'description' => $this->input->post('description'),
+                        'image' => $upload_data['file_name']
+                    ];
+
+                    $this->Product_model->insert_product($product_data);
+                    $this->session->set_flashdata('success', 'Product added successfully!');
+                    redirect('products');
+                }
             }
         }
 
@@ -62,24 +97,34 @@ class Products extends CI_Controller {
         $product = $this->Product_model->get_product($id);
 
         if ($this->input->post()) {
-            $product_data = [
-                'name' => $this->input->post('name'),
-                'price' => $this->input->post('price'),
-                'description' => $this->input->post('description')
-            ];
+            // Validasi input form
+            $this->form_validation->set_rules('name', 'Product Name', 'required|min_length[3]|max_length[50]');
+            $this->form_validation->set_rules('price', 'Price', 'required|numeric');
+            $this->form_validation->set_rules('description', 'Description', 'required|max_length[255]');
 
-            // Handle image upload if there is a new image
-            if ($_FILES['image']['name']) {
-                $upload_data = $this->do_upload();
-                if (isset($upload_data['error'])) {
-                    $data['error'] = $upload_data['error']; // Tampilkan pesan error ke view
-                } else {
-                    $product_data['image'] = $upload_data['file_name'];
+            if ($this->form_validation->run() == FALSE) {
+                $data['error'] = validation_errors(); // Simpan pesan error validasi
+            } else {
+                $product_data = [
+                    'name' => $this->input->post('name'),
+                    'price' => $this->input->post('price'),
+                    'description' => $this->input->post('description')
+                ];
+
+                // Handle image upload if there is a new image
+                if ($_FILES['image']['name']) {
+                    $upload_data = $this->do_upload();
+                    if (isset($upload_data['error'])) {
+                        $data['error'] = $upload_data['error']; // Simpan pesan error upload
+                    } else {
+                        $product_data['image'] = $upload_data['file_name'];
+                    }
                 }
-            }
 
-            $this->Product_model->update_product($id, $product_data);
-            redirect('products');
+                $this->Product_model->update_product($id, $product_data);
+                $this->session->set_flashdata('success', 'Product updated successfully!');
+                redirect('products');
+            }
         }
 
         $data['product'] = $product;
@@ -87,12 +132,6 @@ class Products extends CI_Controller {
         $this->load->view('layout/template/index', $data); // Gunakan layout utama
     }
 
-    public function delete($id) {
-        $this->Product_model->delete_product($id);
-        redirect('products');
-    }
-
-    // Fungsi untuk menangani upload file
     private function do_upload() {
         $config['upload_path']   = './uploads/'; // Path folder upload
         $config['allowed_types'] = 'jpg|jpeg|png|gif'; // Tipe file yang diizinkan
@@ -111,4 +150,5 @@ class Products extends CI_Controller {
             return $this->upload->data(); // Return data file jika berhasil upload
         }
     }
+  
 }
