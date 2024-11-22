@@ -118,10 +118,10 @@ class Users_model extends CI_Model
 		return $this->db->affected_rows() > 0; // Return true jika ada perubahan data
 	}
 
-	public function detele_data($id, $data)
+	public function delete_data($id)
 	{
 		$this->db->where('id', $id);
-		$this->db->delete('users', $data);
+		$this->db->delete('users');
 		return $this->db->affected_rows() > 0; // Return true jika ada perubahan data
 	}
 
